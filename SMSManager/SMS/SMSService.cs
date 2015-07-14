@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SMSManager
 {
-    public class SMSAPI
+    public class SMSService
     {
         private const string NetworkInfoUrlPath = "services/api/status/network";
 
@@ -18,13 +18,26 @@ namespace SMSManager
 
         private const string MessageStatusUrlPath = "services/api/messaging/status";
 
+        private string IP;
+        private int Port;
+        private string Username;
+        private string Password;
+
+        public SMSService(string IP, int Port, string Username, string Password)
+        {
+            this.IP = IP;
+            this.Port = Port;
+            this.Username = Username;
+            this.Password = Password;
+        }
+
         public string ConstructBaseUri()
         {
-            UriBuilder uriBuilder = new UriBuilder("http", "", Convert.ToInt32("0"));
+            UriBuilder uriBuilder = new UriBuilder("http", this.IP, Port);
             return uriBuilder.ToString();
-        } 
+        }
 
-        public async void Send(string username, string password, string contact, string message)
+        public async Task<PostMessageResponse> Send(string contact, string message)
         {
             using (var client = new HttpClient())
             {
@@ -33,13 +46,13 @@ namespace SMSManager
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                                 "Basic",
                                  Convert.ToBase64String(
                                  ASCIIEncoding.ASCII.GetBytes(
-                                 string.Format("{0}:{1}", username, password))));
+                                 string.Format("{0}:{1}", Username, Password))));
                 }
 
                 var postData = new List<KeyValuePair<string, string>>();
@@ -48,22 +61,17 @@ namespace SMSManager
                 HttpContent content = new FormUrlEncodedContent(postData);
                 
                 HttpResponseMessage response = await client.PostAsync(MessagesUrlPath, content);
+                PostMessageResponse result = new PostMessageResponse();
                 if (response.IsSuccessStatusCode)
                 {
-                    PostMessageResponse result = await response.Content.ReadAsAsync<PostMessageResponse>();
-                    if (result.IsSuccessful)
-                    {
-                        //txtOutput.Clear();
-                    }
-                    else
-                    {
-                        //MessageBox.Show(result.Description, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    result = await response.Content.ReadAsAsync<PostMessageResponse>();
                 }
                 else
                 {
-                   // MessageBox.Show(response.ToString(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result.IsSuccessful = false;
+                    result.Description = "HttpResponseMessage Error";
                 }
+                return result;
             }
         }
     }

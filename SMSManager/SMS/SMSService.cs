@@ -74,5 +74,69 @@ namespace SMSManager
                 return result;
             }
         }
+
+        public async Task<GetMessageResponse> GetAllMessages()
+        {
+            using (var client = new HttpClient())
+            {
+                string url = ConstructBaseUri();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                                "Basic",
+                                 Convert.ToBase64String(
+                                 ASCIIEncoding.ASCII.GetBytes(
+                                 string.Format("{0}:{1}", Username, Password))));
+                }
+
+                HttpResponseMessage response = await client.GetAsync(MessagesUrlPath);
+                GetMessageResponse result = new GetMessageResponse();
+                if (response.IsSuccessStatusCode)
+                {
+                    result = await response.Content.ReadAsAsync<GetMessageResponse>();                    
+                }
+                else
+                {
+                    result.IsSuccessful = false;
+                }
+                return result;
+            }
+        }
+
+        public async Task<GetMessageResponse> GetNewMessages()
+        {
+            using (var client = new HttpClient())
+            {
+                string url = ConstructBaseUri();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                                "Basic",
+                                 Convert.ToBase64String(
+                                 ASCIIEncoding.ASCII.GetBytes(
+                                 string.Format("{0}:{1}", Username, Password))));
+                }
+
+                HttpResponseMessage response = await client.GetAsync(MessagesUrlPath + "?status=0");
+                GetMessageResponse result = new GetMessageResponse();
+                if (response.IsSuccessStatusCode)
+                {
+                    result = await response.Content.ReadAsAsync<GetMessageResponse>();
+                }
+                else
+                {
+                    result.IsSuccessful = false;
+                }
+                return result;
+            }
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace SMSManager
                     item.IP = ipAddress;
                     ListIP.Add(item);                    
                     s.Disconnect(true);
-                    
+                    cbbIPLIST.DataSource = ListIP;
                 }
             }
             catch (Exception)
@@ -80,17 +80,16 @@ namespace SMSManager
             return address.Address;
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            cbbIPLIST.DataSource = ListIP;
-        }
-
         private void MainForm_Load(object sender, EventArgs e)
         {
-            ScanIP(80);
             cbbIPLIST.DisplayMember = "IP";
             cbbIPLIST.ValueMember = "IP";
-            
+            ScanIP(80);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            ScanIP(80);
         }
     }
 }

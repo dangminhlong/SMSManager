@@ -19,7 +19,12 @@ namespace SMSManager
             InitializeComponent();
         }
 
-        List<string> ListIP = new List<string>();
+        class IPItem
+        {
+            public string IP { get; set; }
+        }
+
+        List<IPItem> ListIP = new List<IPItem>();
 
         private void ScanIP(int port)
         {
@@ -54,9 +59,11 @@ namespace SMSManager
                 if (s.Connected)
                 {
                     string ipAddress = s.RemoteEndPoint.ToString().Split(':')[0];
-                    ListIP.Add(ipAddress);                    
+                    IPItem item = new IPItem();
+                    item.IP = ipAddress;
+                    ListIP.Add(item);                    
                     s.Disconnect(true);
-                    cbbIPLIST.Items.Add(ipAddress);
+                    
                 }
             }
             catch (Exception)
@@ -81,6 +88,9 @@ namespace SMSManager
         private void MainForm_Load(object sender, EventArgs e)
         {
             ScanIP(80);
+            cbbIPLIST.DisplayMember = "IP";
+            cbbIPLIST.ValueMember = "IP";
+            
         }
     }
 }

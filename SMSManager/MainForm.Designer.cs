@@ -1,6 +1,6 @@
 ﻿namespace SMSManager
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(526, 261);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "SMS Manager";
             this.ResumeLayout(false);
 
         }

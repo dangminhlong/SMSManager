@@ -48,22 +48,22 @@ namespace SMSManager
                 HttpContent content = new FormUrlEncodedContent(postData);
                 
                 HttpResponseMessage response = await client.PostAsync(MessagesUrlPath, content);
-                //if (response.IsSuccessStatusCode)
-                //{
-                //    PostMessageResponse result = await response.Content.ReadAsAsync<PostMessageResponse>();
-                //    if (result.IsSuccessful)
-                //    {
-                //        txtOutput.Clear();
-                //    }
-                //    else
-                //    {
-                //        MessageBox.Show(result.Description, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //    }
-                //}
-                //else
-                //{
-                //    MessageBox.Show(response.ToString(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //}
+                if (response.IsSuccessStatusCode)
+                {
+                    PostMessageResponse result = await response.Content.ReadAsAsync<PostMessageResponse>();
+                    if (result.IsSuccessful)
+                    {
+                        //txtOutput.Clear();
+                    }
+                    else
+                    {
+                        //MessageBox.Show(result.Description, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                   // MessageBox.Show(response.ToString(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

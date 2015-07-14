@@ -4,6 +4,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
 
@@ -14,6 +17,70 @@ namespace SMSManager
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        List<string> ListIP = new List<string>();
+
+        private void ScanIP(int port)
+        {
+            var gatewayIP = GetDefaultGateway().ToString();
+            string a1 = gatewayIP.Split('.')[0];
+            string a2 = gatewayIP.Split('.')[1];
+            string a3 = gatewayIP.Split('.')[2];
+            string a4 = gatewayIP.Split('.')[3];
+            for (int i = 0; i < 255; i++)
+            {
+                if (i != int.Parse(a4))
+                {
+                    string strIpAddress = string.Format("{0}.{1}.{2}.{3}", a1, a2, a3, i);
+                    Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    
+                    IPAddress ipAddress;
+
+                    if (IPAddress.TryParse(strIpAddress, out ipAddress))
+                    {
+                        s.BeginConnect(new IPEndPoint(ipAddress, port), EndConnect, s);
+                    }
+                }
+            }
+        }
+
+        void EndConnect(IAsyncResult ar)
+        {
+            try
+            {
+                Socket s = ar.AsyncState as Socket;
+                s.EndConnect(ar);
+                if (s.Connected)
+                {
+                    string ipAddress = s.RemoteEndPoint.ToString().Split(':')[0];
+                    ListIP.Add(ipAddress);                    
+                    s.Disconnect(true);
+                    cbbIPLIST.Items.Add(ipAddress);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        public IPAddress GetDefaultGateway()
+        {
+            var card = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault();
+            if (card == null) return null;
+            var address = card.GetIPProperties().GatewayAddresses.FirstOrDefault();
+            return address.Address;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            cbbIPLIST.DataSource = ListIP;
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            ScanIP(80);
         }
     }
 }

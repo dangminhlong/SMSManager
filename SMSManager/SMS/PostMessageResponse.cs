@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace SMSManager
 {
-    public class Message: BaseMessage
+    public class PostMessageResponse:BaseResponse
     {
-        public string To { get; set; }
+        public Message Message { get; set; }
 
         override public string ToString()
         {
             string str = String.Empty;
-            str = String.Concat(str, "Date = ", Date, "\r\n");
-            str = String.Concat(str, "Id = ", Id, "\r\n");
+            str = String.Concat(str, "RequestMethod = ", RequestMethod, "\r\n");
+            str = String.Concat(str, "Description = ", Description, "\r\n");
+            str = String.Concat(str, "IsSuccessful = ", IsSuccessful, "\r\n");
             str = String.Concat(str, "Message = ", Message, "\r\n");
-            str = String.Concat(str, "Number = ", Number, "\r\n");
-            str = String.Concat(str, "To = ", To, "\r\n");
             return str;
         }
     }
